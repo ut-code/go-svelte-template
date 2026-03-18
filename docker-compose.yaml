@@ -12,9 +12,10 @@ services:
       - ./backend/sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 2s
+      interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
+      start_period: 30s
 
   backend:
     build:
