@@ -68,7 +68,8 @@ mise run format     # goimports/gofmt + Biome
 |------|------|-----------|
 | `DATABASE_URL` | PostgreSQL 接続文字列 | `postgres://postgres:postgres@localhost:5432/wordle?sslmode=disable` |
 | `PORT` | Backend リッスンポート | `8080` |
-| `VITE_API_URL` | Backend URL (Frontend から) | `http://localhost:8080` |
+| `API_URL` | Backend URL (SSR サーバーから) | `http://localhost:8080` |
+| `VITE_API_URL` | Backend URL (ブラウザから、ビルド時に埋め込み) | `http://localhost:8080` |
 
 ### Docker Compose (動作確認用)
 
@@ -85,11 +86,14 @@ docker compose up
 
 ### Docker Compose
 
+`docker-compose.yaml` にはポートマッピングを含めていない（Coolify/Traefik が管理するため）。ローカルでは `docker-compose.override.yaml` が自動で読み込まれ、ポートが公開される。
+
 1. Coolifyで新規プロジェクト作成 → **Docker Compose** を選択
 2. GitHubリポジトリ接続
-3. Compose ファイルに `compose.yml` を指定
-4. 環境変数で `VITE_API_URL` を本番の Backend URL に設定
-5. デプロイ
+3. Compose ファイルに `docker-compose.yaml` を指定
+4. 各サービスのポートとドメインを Coolify の UI で設定
+5. 環境変数で `VITE_API_URL` を本番の Backend URL に設定
+6. デプロイ
 
 ### 個別サービス
 
