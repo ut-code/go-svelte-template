@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS words (
+    id SERIAL PRIMARY KEY,
+    word TEXT NOT NULL UNIQUE,
+    date DATE NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS scores (
+    id SERIAL PRIMARY KEY,
+    player_name TEXT NOT NULL,
+    word_id INTEGER NOT NULL REFERENCES words(id),
+    attempts INTEGER NOT NULL,
+    solved BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
