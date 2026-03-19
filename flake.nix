@@ -22,6 +22,7 @@
             pkgs.gopls
             pkgs.gotools
             pkgs.golangci-lint
+            pkgs.air
             pkgs.sqlc
             pkgs.mise
             pkgs.bun

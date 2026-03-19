@@ -1,10 +1,12 @@
 <script lang="ts">
-import { type HintResult, submitGuess } from "$lib/api";
+import { enhance } from "$app/forms";
+
+type HintResult = "correct" | "present" | "absent";
 
 const MAX_ATTEMPTS = 6;
 
 let { data } = $props();
-let wordLength = $state(data.wordLength);
+let wordLength = $derived(data.wordLength);
 let guesses = $state<string[]>([]);
 let hints = $state<HintResult[][]>([]);
 let currentGuess = $state("");
@@ -12,34 +14,12 @@ let gameOver = $state(false);
 let won = $state(false);
 let error = $state("");
 
-async function handleSubmit() {
-	if (currentGuess.length !== wordLength || gameOver) return;
-
-	try {
-		error = "";
-		const res = await submitGuess(currentGuess.toLowerCase());
-		guesses = [...guesses, currentGuess.toLowerCase()];
-		hints = [...hints, res.result];
-
-		if (res.correct) {
-			gameOver = true;
-			won = true;
-		} else if (guesses.length >= MAX_ATTEMPTS) {
-			gameOver = true;
-		}
-
-		currentGuess = "";
-	} catch {
-		error = "Failed to submit guess";
-	}
-}
-
 // biome-ignore lint/correctness/noUnusedVariables: referenced in svelte:window template
 function handleKeydown(e: KeyboardEvent) {
 	if (gameOver) return;
 
 	if (e.key === "Enter") {
-		handleSubmit();
+		document.getElementById("guess-form")?.requestSubmit();
 	} else if (e.key === "Backspace") {
 		currentGuess = currentGuess.slice(0, -1);
 	} else if (/^[a-zA-Z]$/.test(e.key) && currentGuess.length < wordLength) {
@@ -56,6 +36,37 @@ function cellColor(hint: HintResult | undefined): string {
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
+
+<form
+	id="guess-form"
+	method="POST"
+	action="?/guess"
+	use:enhance={({ cancel }) => {
+		if (currentGuess.length !== wordLength || gameOver) {
+			cancel();
+			return;
+		}
+		const guess = currentGuess.toLowerCase();
+		return async ({ result }) => {
+			if (result.type === "success" && result.data) {
+				error = "";
+				guesses = [...guesses, guess];
+				hints = [...hints, result.data.result as HintResult[]];
+				if (result.data.correct) {
+					gameOver = true;
+					won = true;
+				} else if (guesses.length >= MAX_ATTEMPTS) {
+					gameOver = true;
+				}
+				currentGuess = "";
+			} else if (result.type === "failure" && result.data) {
+				error = result.data.error as string;
+			}
+		};
+	}}
+>
+	<input type="hidden" name="guess" value={currentGuess.toLowerCase()} />
+</form>
 
 <h1 class="text-3xl tracking-widest mb-6 font-bold">Wordle</h1>
 

@@ -19,7 +19,6 @@ services:
     build:
       context: ./backend
     environment:
-      SERVICE_FQDN_BACKEND_8080: ""
       DATABASE_URL: postgres://postgres:postgres@db:5432/wordle?sslmode=disable
     depends_on:
       db:
@@ -28,8 +27,6 @@ services:
   frontend:
     build:
       context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:8080
     environment:
       SERVICE_FQDN_FRONTEND_3000: ""
       API_URL: http://backend:8080

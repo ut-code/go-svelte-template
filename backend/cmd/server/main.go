@@ -6,11 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"web-go-template/internal/db"
@@ -42,18 +40,6 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	allowedOrigins := []string{"http://localhost:5173", "http://localhost:3000"}
-	if extra := os.Getenv("CORS_ORIGINS"); extra != "" {
-		for _, o := range strings.Split(extra, ",") {
-			allowedOrigins = append(allowedOrigins, strings.TrimSpace(o))
-		}
-	}
-	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   allowedOrigins,
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		AllowedHeaders:   []string{"Content-Type"},
-		AllowCredentials: true,
-	}))
 
 	r.Get("/api/health", func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte("ok"))
