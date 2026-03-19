@@ -13,13 +13,14 @@ let currentGuess = $state("");
 let gameOver = $state(false);
 let won = $state(false);
 let error = $state("");
+let formEl = $state<HTMLFormElement>();
 
 // biome-ignore lint/correctness/noUnusedVariables: referenced in svelte:window template
 function handleKeydown(e: KeyboardEvent) {
 	if (gameOver) return;
 
 	if (e.key === "Enter") {
-		document.getElementById("guess-form")?.requestSubmit();
+		formEl?.requestSubmit();
 	} else if (e.key === "Backspace") {
 		currentGuess = currentGuess.slice(0, -1);
 	} else if (/^[a-zA-Z]$/.test(e.key) && currentGuess.length < wordLength) {
@@ -38,7 +39,7 @@ function cellColor(hint: HintResult | undefined): string {
 <svelte:window onkeydown={handleKeydown} />
 
 <form
-	id="guess-form"
+	bind:this={formEl}
 	method="POST"
 	action="?/guess"
 	use:enhance={({ cancel }) => {

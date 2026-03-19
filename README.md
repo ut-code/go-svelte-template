@@ -27,8 +27,9 @@ direnv allow
 ```bash
 mise install
 
-# sqlc, golangci-lint は別途インストール
+# sqlc, golangci-lint, air は別途インストール
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+go install github.com/air-verse/air@latest
 # https://golangci-lint.run/welcome/install/
 ```
 

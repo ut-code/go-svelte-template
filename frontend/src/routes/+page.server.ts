@@ -1,5 +1,5 @@
-import { env } from "$env/dynamic/private";
 import { fail } from "@sveltejs/kit";
+import { env } from "$env/dynamic/private";
 
 const API_URL = env.API_URL ?? "http://localhost:8080";
 
